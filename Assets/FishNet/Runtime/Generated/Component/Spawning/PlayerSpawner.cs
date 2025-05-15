@@ -12,6 +12,8 @@ namespace FishNet.Component.Spawning
     /// Spawns a player object for clients when they connect.
     /// Must be placed on or beneath the NetworkManager object.
     /// </summary>
+    
+    
     public class PlayerSpawner : MonoBehaviour
     {
         #region Public.
@@ -28,6 +30,9 @@ namespace FishNet.Component.Spawning
         [Tooltip("Prefab to spawn for the player.")]
         [SerializeField]
         private NetworkObject _playerPrefab;
+
+        [SerializeField]
+        private NetworkObject _instructorPlayerPrefab;  
         /// <summary>
         /// True to add player to the active scene when no global scenes are specified through the SceneManager.
         /// </summary>
@@ -90,6 +95,11 @@ namespace FishNet.Component.Spawning
             if (_playerPrefab == null)
             {
                 Debug.LogWarning($"Player prefab is empty and cannot be spawned for connection {conn.ClientId}.");
+                return;
+            }
+                if (_instructorPlayerPrefab == null)
+            {
+                Debug.LogWarning($"_instructorPlayerPrefab prefab is empty and cannot be spawned for connection {conn.ClientId}.");
                 return;
             }
 
