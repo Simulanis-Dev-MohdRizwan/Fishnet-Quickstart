@@ -39,18 +39,14 @@ public class PlayerEvents : NetworkBehaviour
         base.OnStartServer();
         if (base.IsServer)
         {
-            player.SetActive(false);
-         
+           
+                 player.SetActive(false);
                 instructorPlayer.SetActive(true);
                 Debug.Log("i am server");
 
          
         }   
-            else
-            {   Debug.Log("i am not server");
-                
-            }
-
+          
     }
 
 
@@ -66,12 +62,21 @@ public class PlayerEvents : NetworkBehaviour
             {
                 Debug.Log(this + " local");
                 LocalClientEvents?.Invoke();
-            }else
+            }
+            else
             {
                 Debug.Log(this + "remote");
                 RemoteClientEvents?.Invoke();
             }
             Debug.Log(" ia m client only");
+        }
+        if (base.IsServer)
+        {
+
+            player.SetActive(false);
+            instructorPlayer.SetActive(true);
+            instructorPlayer.name = instructorPlayer.name + "Server";
+            Debug.Log(instructorPlayer.name + this);
         }
     }
 
