@@ -30,9 +30,6 @@ namespace FishNet.Component.Spawning
         [Tooltip("Prefab to spawn for the player.")]
         [SerializeField]
         private NetworkObject _playerPrefab;
-
-        [SerializeField]
-        private NetworkObject _instructorPlayerPrefab;  
         /// <summary>
         /// True to add player to the active scene when no global scenes are specified through the SceneManager.
         /// </summary>
@@ -92,14 +89,10 @@ namespace FishNet.Component.Spawning
         {
             if (!asServer)
                 return;
+
             if (_playerPrefab == null)
             {
                 Debug.LogWarning($"Player prefab is empty and cannot be spawned for connection {conn.ClientId}.");
-                return;
-            }
-                if (_instructorPlayerPrefab == null)
-            {
-                Debug.LogWarning($"_instructorPlayerPrefab prefab is empty and cannot be spawned for connection {conn.ClientId}.");
                 return;
             }
 
@@ -117,6 +110,11 @@ namespace FishNet.Component.Spawning
             OnSpawned?.Invoke(nob);
         }
 
+        public void ChangePlayerPrefabReference(NetworkObject networkObject)
+        {
+            _playerPrefab = networkObject;
+            Debug.Log("Player prefab changed");
+        }
 
         /// <summary>
         /// Sets a spawn position and rotation.
