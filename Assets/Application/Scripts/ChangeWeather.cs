@@ -25,13 +25,13 @@ public class ChangeWeather : NetworkBehaviour
     }
 
      [ServerRpc]
-    public void ChangeRainWeather(bool rain, NetworkConnection networkConnection = null)
+    public void ChangeRainWeather(string rain, NetworkConnection networkConnection = null)
     {
         SetClientWeather(rain);
     }
 
     [ObserversRpc]
-    void SetClientWeather(bool rain)
+    void SetClientWeather(string rain)
     {
         WeatherHandler.weather.CustomSetRainy(rain);
     }
@@ -57,15 +57,15 @@ public class ChangeWeather : NetworkBehaviour
     {
         DayBtn.onClick.AddListener(() => ChangeDayTime("Day"));
         NightBtn.onClick.AddListener(() => ChangeDayTime("Night"));
-        RainBtn.onClick.AddListener(() => SetClientWeather(true));
-        NoRainBtn.onClick.AddListener(() => SetClientWeather(false));
+        RainBtn.onClick.AddListener(() => SetClientWeather("rain"));
+        NoRainBtn.onClick.AddListener(() => SetClientWeather("norain"));
     }
     void OnDisable()
     {
         DayBtn.onClick.RemoveListener(() => ChangeDayTime("Day"));
         NightBtn.onClick.RemoveListener(() => ChangeDayTime("Night"));
-        RainBtn.onClick.RemoveListener(() => SetClientWeather(true));
-        NoRainBtn.onClick.RemoveListener(() => SetClientWeather(false));
+        RainBtn.onClick.RemoveListener(() => SetClientWeather("rain"));
+        NoRainBtn.onClick.RemoveListener(() => SetClientWeather("norain"));
     }
 
 

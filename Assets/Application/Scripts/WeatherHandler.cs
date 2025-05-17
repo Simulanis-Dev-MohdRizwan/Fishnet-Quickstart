@@ -11,14 +11,14 @@ public class WeatherHandler : MonoBehaviour
     private void Start() {
         tenkokuObject = (Tenkoku.Core.TenkokuModule) FindObjectOfType(typeof(Tenkoku.Core.TenkokuModule));
     }
-    public void CustomSetRainy(bool rain)
+    public void CustomSetRainy(string rain)
     {
-        if (rain)
+        if (rain.ToLower().Equals("rain"))
         {
             tenkokuObject.weather_RainAmt = 1f;
             tenkokuObject.weather_RainAmt = 0.4f;
         }
-        else
+        else if(rain.ToLower().Equals("norain"))
         {
             tenkokuObject.weather_RainAmt = 0f;
             tenkokuObject.weather_RainAmt = 0.1f;
