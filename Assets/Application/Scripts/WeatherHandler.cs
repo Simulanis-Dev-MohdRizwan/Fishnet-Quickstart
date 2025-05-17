@@ -1,15 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 
 public class WeatherHandler : MonoBehaviour
 {
-    public static WeatherHandler weather;
+    public static System.Action<GameObject> SetReference;
+
     public Tenkoku.Core.TenkokuModule tenkokuObject;
 
-    private void Start() {
-        tenkokuObject = (Tenkoku.Core.TenkokuModule) FindObjectOfType(typeof(Tenkoku.Core.TenkokuModule));
+    private void Start()
+    {
+        SetReference += SetMainCamera;
+        tenkokuObject = (Tenkoku.Core.TenkokuModule)FindObjectOfType(typeof(Tenkoku.Core.TenkokuModule));
     }
     public void CustomSetRainy(string rain)
     {
@@ -18,7 +19,7 @@ public class WeatherHandler : MonoBehaviour
             tenkokuObject.weather_RainAmt = 1f;
             tenkokuObject.weather_RainAmt = 0.4f;
         }
-        else if(rain.ToLower().Equals("norain"))
+        else if (rain.ToLower().Equals("norain"))
         {
             tenkokuObject.weather_RainAmt = 0f;
             tenkokuObject.weather_RainAmt = 0.1f;
@@ -29,12 +30,18 @@ public class WeatherHandler : MonoBehaviour
     {
         if (day.ToLower().Equals("day"))
         {
-            tenkokuObject.dayValue = 10f;
+            tenkokuObject.setHour = 10;
         }
         else if (day.ToLower().Equals("night"))
         {
-             tenkokuObject.dayValue = 18.5f;
+            tenkokuObject.setHour = 19;
         }
-     }
+    }
+     void SetMainCamera(GameObject cam)
+    {
+        tenkokuObject.enabled = true;
+        tenkokuObject.mainCamera = cam.transform;
+    }
+
     
 }

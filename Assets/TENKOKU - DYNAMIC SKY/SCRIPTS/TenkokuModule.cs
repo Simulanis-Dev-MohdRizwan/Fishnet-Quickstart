@@ -721,11 +721,12 @@ bool totalEclipse = false;
 
 
 
-	void Awake(){
+	void OnEnable(){
 		//GET CAMERA OBJECT
 		if (Application.isPlaying){
 			if (mainCamera == null){
-				mainCamera = Camera.main.transform;
+				
+				Debug.Log("maincam is null of tenkoku");
 			}
 		}
 
@@ -827,12 +828,6 @@ bool totalEclipse = false;
 		if (enableFog) UnityEngine.RenderSettings.fog = false;
 
 	}
-
-
-
-
-
-
 
 	void LoadObjects() {
 

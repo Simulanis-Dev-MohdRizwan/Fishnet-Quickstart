@@ -1,20 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
-using FishNet;
+
 using FishNet.Object;
 using FishNetQuckstart.Advanced;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
+
 
 public class PlayerEvents : NetworkBehaviour
 {
+   
     private NetworkObject networkObject;
     public UnityEvent LocalClientEvents;
     public UnityEvent RemoteClientEvents;
     public GameObject player;
     public GameObject instructorPlayer;
+    public Camera playerCam;
+    public Camera instructorCam;
+
+    public bool iAmOwner;
+
+    public bool iAmServer;
 
     void Awake()
     {
@@ -30,7 +35,6 @@ public class PlayerEvents : NetworkBehaviour
         {
             player = transform.Find("VRPlayer").gameObject;
         }
-
     }
 
 
@@ -39,45 +43,43 @@ public class PlayerEvents : NetworkBehaviour
         base.OnStartServer();
         if (base.IsServer)
         {
-           
-                 player.SetActive(false);
-                instructorPlayer.SetActive(true);
-                Debug.Log("i am server");
-
-         
+            iAmServer = true;
         }   
-          
     }
 
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-
-        if (base.IsClientOnly)
+        if (IsOwner)
         {
-            player.SetActive(true);
-            Debug.Log("client");
-            if (networkObject.IsOwner)
+            iAmOwner = true;
+            if (IsServer)
             {
-                Debug.Log(this + " local");
-                LocalClientEvents?.Invoke();
+                player.SetActive(false);
+                instructorPlayer.SetActive(true);
+                Debug.Log(instructorPlayer.name + this);
+                Debug.Log("i am server");
             }
-            else
-            {
-                Debug.Log(this + "remote");
-                RemoteClientEvents?.Invoke();
-            }
-            Debug.Log(" ia m client only");
-        }
-        if (base.IsServer)
-        {
 
-            player.SetActive(false);
-            instructorPlayer.SetActive(true);
-            instructorPlayer.name = instructorPlayer.name + "Server";
-            Debug.Log(instructorPlayer.name + this);
+            if (base.IsClientOnly)
+            {
+                WeatherHandler.SetReference(playerCam.gameObject);
+                player.SetActive(true);
+                Debug.Log("client");
+                if (networkObject.IsOwner)
+                {
+                    LocalClientEvents?.Invoke();
+                }
+                else
+                {
+                    RemoteClientEvents?.Invoke();
+                }
+                Debug.Log(" ia m client only");
+            }
         }
+ 
+
     }
 
 
