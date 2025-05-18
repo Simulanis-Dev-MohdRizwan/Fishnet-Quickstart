@@ -9,6 +9,16 @@ public class bhapticsplay : MonoBehaviour
 
     public static Action playRightDevice, PlayLeftDevie;
 
+    public bool PlayContinously;
+
+
+    void Update()
+    {
+        if (PlayContinously)
+        {
+            PlayLeftHand();
+        }
+    }
     private void OnEnable()
     {
         playRightDevice += PlayRightHand;
