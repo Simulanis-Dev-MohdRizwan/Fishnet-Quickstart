@@ -64,8 +64,9 @@ public class PlayerEvents : NetworkBehaviour
             if (base.IsClientOnly)
             {
                 WeatherHandler.SetReference(playerCam.gameObject);
-                OperationBillBoard.SetReferences(playerCam.gameObject);
+              //OperationBillBoard.SetReferences(playerCam.gameObject);
                 player.SetActive(true);
+                instructorPlayer.SetActive(false);
                 Debug.Log("client");
                 if (networkObject.IsOwner)
                 {
@@ -75,7 +76,7 @@ public class PlayerEvents : NetworkBehaviour
                 {
                     RemoteClientEvents?.Invoke();
                 }
-                Debug.Log(" ia m client only");
+                Debug.Log(" i am client only ");
             }
         }
  

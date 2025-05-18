@@ -1,147 +1,109 @@
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 using System.Collections.Generic;
-using FishNet.Object;
 
-public class ProcessTracker : NetworkBehaviour
+public class ProcessTracker : MonoBehaviour
 {
-    [Tooltip("List of GameObjects representing individual processes. Order defines the sequence.")]
-    public List<GameObject> processObjects;
+    [Header("Process GameObjects")]
+    public List<GameObject> processes;
 
-    public int _currentProcessIndex = 0;
-    private List<Process> _processes = new List<Process>();
+    [Header("TextMeshPro Reference")]
+    public TMP_Text processTextDisplay;
 
-    [System.Serializable]
-    public class Process
+    private int _currentProcessIndex = 0;
+    private AudioSource _audioSource;
+    private AudioClip _currentAudioClip;
+
+    private void Awake()
     {
-        public GameObject gameObject;
-        public UnityEvent onStart = new UnityEvent();
-        public UnityEvent onComplete = new UnityEvent();
-    }
-
-    void Awake()
-    {
-        InitializeProcesses();
-    }
-
-    void Start()
-    {
-        if (_processes.Count > 0)
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
         {
-            ActivateCurrentProcess();
+            _audioSource = gameObject.AddComponent<AudioSource>();
         }
-        else
-        {
-            Debug.LogWarning("No process GameObjects assigned in the Process Tracker.");
-        }
-    }
 
-    void InitializeProcesses()
-    {
-        foreach (GameObject processObject in processObjects)
+        // Ensure all process GameObjects are initially inactive, except the first one
+        for (int i = 0; i < processes.Count; i++)
         {
-            Process process = new Process();
-            process.gameObject = processObject;
-
-            // Try to find OnStart and OnComplete events on the GameObject
-            ProcessEvents processEvents = processObject.GetComponent<ProcessEvents>();
-            if (processEvents != null)
+            if (processes[i] != null)
             {
-                process.onStart = processEvents.onStart;
-                process.onComplete = processEvents.onComplete;
+                processes[i].SetActive(i == 0);
+                ProcessEvents processComponent = processes[i].GetComponent<ProcessEvents>();
+                if (processComponent != null)
+                {
+                    if (i == 0)
+                    {
+                        processComponent.onStart.Invoke();
+                        PlayProcessAudio(processComponent.audioClip);
+                        UpdateProcessText(processComponent.processText);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Process GameObject at index {i} does not have a Process component.");
+                }
             }
             else
             {
-                Debug.LogWarning($"Process GameObject '{processObject.name}' does not have a ProcessEvents component. Using default UnityEvents.");
+                Debug.LogError($"Process GameObject at index {i} is null!");
             }
-
-            _processes.Add(process);
-            // Ensure all process GameObjects are initially inactive
-            processObject.SetActive(false);
-        }
-    }
-
-    void ActivateCurrentProcess()
-    {
-        if (_currentProcessIndex >= 0 && _currentProcessIndex < _processes.Count)
-        {
-            _processes[_currentProcessIndex].gameObject.SetActive(true);
-            _processes[_currentProcessIndex].onStart.Invoke();
-            Debug.Log($"Process '{_processes[_currentProcessIndex].gameObject.name}' started.");
-        }
-        else
-        {
-            Debug.Log("All processes completed.");
         }
     }
 
     public void CompleteCurrentProcess()
     {
-        if (_currentProcessIndex >= 0 && _currentProcessIndex < _processes.Count)
+        if (_currentProcessIndex >= 0 && _currentProcessIndex < processes.Count)
         {
-            _processes[_currentProcessIndex].onComplete.Invoke();
-            _processes[_currentProcessIndex].gameObject.SetActive(false);
-            processObjects[_currentProcessIndex].GetComponent<ProcessEvents>().completed = true;
+            GameObject currentProcessObject = processes[_currentProcessIndex];
+            ProcessEvents currentProcess = currentProcessObject.GetComponent<ProcessEvents>();
 
-            Debug.Log($"Process '{_processes[_currentProcessIndex].gameObject.name}' completed.");
-            MoveToNextProcess();
+            if (currentProcess != null)
+            {
+                currentProcess.onComplete.Invoke();
+            }
+
+            // Move to the next process if available
+            _currentProcessIndex++;
+            if (_currentProcessIndex < processes.Count)
+            {
+                GameObject nextProcessObject = processes[_currentProcessIndex];
+                nextProcessObject.SetActive(true);
+                ProcessEvents nextProcess = nextProcessObject.GetComponent<ProcessEvents>();
+                if (nextProcess != null)
+                {
+                    nextProcess.onStart.Invoke();
+                    PlayProcessAudio(nextProcess.audioClip);
+                    UpdateProcessText(nextProcess.processText);
+                }
+            }
+            else
+            {
+                Debug.Log("All processes completed!");
+                // You might want to add an overall completion event here
+            }
         }
-        else
+    }
+
+    private void PlayProcessAudio(AudioClip clip)
+    {
+        if (_audioSource != null && clip != null)
         {
-            Debug.LogWarning("No active process to complete.");
+            _audioSource.clip = clip;
+            _audioSource.Play();
+            _currentAudioClip = clip;
         }
-    }
-
-    [ContextMenu("Move to next")]
-    public void MoveToNextProcess()
-    {
-        _currentProcessIndex++;
-        //ActivateCurrentProcess();
-
-        SyncVarOnServer(_currentProcessIndex);
-    }
-
-    public void MoveToPreviousProcess()
-    {
-        _currentProcessIndex--;
-        if (_currentProcessIndex < 0)
+        else if (_audioSource != null && clip == null && _currentAudioClip != null && !_audioSource.isPlaying)
         {
-            _currentProcessIndex = 0;
-            Debug.Log("Already at the first process.");
+            Debug.Log(_currentAudioClip + " is audio completed");
         }
-        ActivateCurrentProcess();
     }
 
-    public int GetCurrentProcessIndex()
+    private void UpdateProcessText(string text)
     {
-        return _currentProcessIndex;
-    }
-
-    public GameObject GetCurrentProcessObject()
-    {
-        if (_currentProcessIndex >= 0 && _currentProcessIndex < _processes.Count)
+        if (processTextDisplay != null)
         {
-            return _processes[_currentProcessIndex].gameObject;
+            processTextDisplay.text = text;
         }
-        return null;
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void SyncVarOnServer(int currentStep)
-    {
-        SyncVarOnObserver(currentStep);
-        Debug.Log("current step on Server is: " + currentStep);
-    }
-
-    [ObserversRpc(BufferLast = true, RunLocally = true, IncludeOwner = true)]
-    public void SyncVarOnObserver(int currentStep)
-    {
-        Debug.Log("current step on observer is: " + currentStep);
-        if (_currentProcessIndex != currentStep)
-        {
-            _currentProcessIndex = currentStep;
-        }
-        ActivateCurrentProcess();
-    }
-
 }
