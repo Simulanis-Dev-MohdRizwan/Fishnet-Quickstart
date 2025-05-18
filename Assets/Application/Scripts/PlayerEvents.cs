@@ -1,7 +1,5 @@
 
 using FishNet.Object;
-using FishNetQuckstart.Advanced;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -27,6 +25,7 @@ public class PlayerEvents : NetworkBehaviour
     }
     private void OnEnable()
     {
+        
         if (instructorPlayer == null)
         {
             instructorPlayer = transform.Find("Instructor").gameObject;
@@ -65,6 +64,7 @@ public class PlayerEvents : NetworkBehaviour
             if (base.IsClientOnly)
             {
                 WeatherHandler.SetReference(playerCam.gameObject);
+                OperationBillBoard.SetReferences(playerCam.gameObject);
                 player.SetActive(true);
                 Debug.Log("client");
                 if (networkObject.IsOwner)

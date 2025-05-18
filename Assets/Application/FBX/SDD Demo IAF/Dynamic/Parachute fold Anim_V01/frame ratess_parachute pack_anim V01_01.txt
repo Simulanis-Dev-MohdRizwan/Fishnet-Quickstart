@@ -1,0 +1,10 @@
+clip 01_  01-125
+fold 01_  126-160
+clip 02_  160-274
+fold 02_  263-288
+clip 03_  288-370
+bag pick_ 375-396
+bag open_ 397-425
+parachute pack_ 426-700
+bag close_      700-725
+bag put bacK_   726-750

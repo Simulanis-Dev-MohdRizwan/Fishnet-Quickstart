@@ -1,10 +1,5 @@
 using FishNet.Object;
-using FishNet.Connection;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
-using MonoFN.Cecil.Cil;
-using JetBrains.Annotations;
 
 public class ChangeWeatherRPC : NetworkBehaviour
 {
