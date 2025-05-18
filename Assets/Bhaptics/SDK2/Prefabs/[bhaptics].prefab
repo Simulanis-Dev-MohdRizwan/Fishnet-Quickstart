@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23aca228b96921048bd497757f5bca2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoRunBhapticsPlayer: 0
+  autoRunBhapticsPlayer: 1
 --- !u!114 &7633731904553870967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,6 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aade042f2bdcee419c9177857987f89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayContinously: 0
 --- !u!1 &9080149949347099261
 GameObject:
   m_ObjectHideFlags: 0

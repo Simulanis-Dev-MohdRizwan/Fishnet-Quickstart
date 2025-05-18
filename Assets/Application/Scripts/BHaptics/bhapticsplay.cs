@@ -9,16 +9,22 @@ public class bhapticsplay : MonoBehaviour
 
     public static Action playRightDevice, PlayLeftDevie;
 
-    public bool PlayContinously;
+    public bool PlayLeftContinuosly, PlayRightContinuously;
 
-
-    void Update()
+    private void Update()
     {
-        if (PlayContinously)
+        if (PlayLeftContinuosly)
         {
             PlayLeftHand();
         }
+
+        if (PlayRightContinuously)
+        {
+            PlayRightHand();
+        }
     }
+
+
     private void OnEnable()
     {
         playRightDevice += PlayRightHand;
@@ -32,7 +38,7 @@ public class bhapticsplay : MonoBehaviour
     }
 
     [ContextMenu("Play Left")]
-   public void PlayLeftHand()
+    public void PlayLeftHand()
     {
         bhaptics_library.play("vibrate");
     }
